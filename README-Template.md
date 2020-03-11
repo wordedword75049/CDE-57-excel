@@ -1,6 +1,6 @@
 # Project Title
 
-One Paragraph of project description goes here
+This repository contains our project "digitization of diagrams".
 
 ## Getting Started
 
