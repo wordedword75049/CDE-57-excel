@@ -10,9 +10,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 What things you need to install the software and how to install them
 
-```
-Give examples
-```
+python 3.8.1 https://www.python.org/downloads/
+OpenCV – 4.2.0 https://opencv.org/releases/
+
 
 ### Installing
 
