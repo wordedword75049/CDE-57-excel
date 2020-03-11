@@ -72,15 +72,17 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-
+* **Zyryanov Ilya** - *Developer* - 
+* **Zyryanov Ilya** - *Developer* - 
+* **Zyryanov Ilya** - *Developer* - 
+* **Serov Yaroslav** - *Developer* - 
+* **Ivanin Nikita** - *Developer* - 
+* **Demidov Artem** - *Developer* - 
+* **Kurenev Alexander** - *Developer* - 
+* **Sofya Sergienko** - *Product manager* - 
 
 See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-* **Zyryanov Ilya** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Serov Yaroslav** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Demidov Artem** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Ivanin Nikita** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Demidov Artem** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-* **Kurenev Alexander** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
+
 
 ## License
 
