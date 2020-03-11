@@ -72,8 +72,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 
 ## Authors
 
-* **Zyryanov Ilya** - *Developer* - 
-* **Zyryanov Ilya** - *Developer* - 
+* **Marat Khabibullin** - *Team lead* - 
 * **Zyryanov Ilya** - *Developer* - 
 * **Serov Yaroslav** - *Developer* - 
 * **Ivanin Nikita** - *Developer* - 
