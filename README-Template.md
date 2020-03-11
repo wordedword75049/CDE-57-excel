@@ -81,7 +81,7 @@ We use [SemVer](http://semver.org/) for versioning. For the versions available, 
 * **Kurenev Alexander** - *Developer* - 
 * **Sofya Sergienko** - *Product manager* - 
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.(мб потом появяться)
 
 
 ## License
