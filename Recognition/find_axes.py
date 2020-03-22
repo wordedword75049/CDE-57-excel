@@ -58,11 +58,9 @@ def find_axes(name):
 
     rho_hor, theta_hor = get_horizontal_axis(edges)
     lines.append([[rho_hor, theta_hor]])
-    print(len(lines))
 
     add_lines(img, lines)
 
-    cv2.imwrite('houghlines3_' + name + '.png', img)
     cv2.imshow('image', img)
     cv2.waitKey(0)
 
