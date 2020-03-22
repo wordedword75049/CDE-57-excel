@@ -30,7 +30,7 @@ def get_horizontal_axis(edges, part=2, delta=5e-3):
     return None, None
 
 
-def add_lines(img, lines):
+def draw_lines_on_image(img, lines):
     scale = 10**3
     for [[rho, theta]] in lines:
         a = np.cos(theta)
@@ -59,7 +59,7 @@ def find_axes(name):
     rho_hor, theta_hor = get_horizontal_axis(edges)
     lines.append([[rho_hor, theta_hor]])
 
-    add_lines(img, lines)
+    draw_lines_on_image(img, lines)
 
     cv2.imshow('image', img)
     cv2.waitKey(0)
