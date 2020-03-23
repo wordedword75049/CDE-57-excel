@@ -10,26 +10,8 @@ Install all required dependancies
 
 * python 3.8.1 https://www.python.org/downloads/
 * OpenCV – 4.2.0 https://opencv.org/releases/
-
-## Running the tests
-
-Explain how to run the automated tests for this system
-
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
+** special python library:
+*	XlsxWritter https://xlsxwriter.readthedocs.io/getting_started.html
 
 ## Authors
 
