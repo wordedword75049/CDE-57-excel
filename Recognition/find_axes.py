@@ -3,12 +3,12 @@ import cv2
 import sys
 
 
-def is_vertical(theta, delta=np.pi*5e-3):
+def is_vertical(theta, delta=np.pi * 5e-3):
     return theta < delta
 
 
-def is_horizontal(theta, delta=np.pi*5e-3):
-    return (theta > np.pi/2 - delta) and (theta < np.pi/2 + delta)
+def is_horizontal(theta, delta=np.pi * 5e-3):
+    return (theta > np.pi / 2 - delta) and (theta < np.pi / 2 + delta)
 
 
 def get_vertical_axis(edges, part=3, delta=5e-3):
@@ -26,14 +26,25 @@ def get_vertical_axis(edges, part=3, delta=5e-3):
     # точность определения угла в радианах, минимальный порог чила пикселей на линии,
     # при котором линия попадет в output, в итоге возвращает массив из значений вида [[rho, theta]],
     # отсортированный по убыванию числа точек, соответствующих данной линии
-    lines = cv2.HoughLines(edges, 1, np.pi/180, edges.shape[0] // part)
-    theta_min = None
-    rho_min = None
-    for [[rho, theta]] in lines:
-        if is_vertical(theta, delta) and (not rho_min or (rho_min > rho)):
-            theta_min = theta
-            rho_min = rho
-    return rho_min, theta_min
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, edges.shape[0] // part)
+    data_min = {}
+    data_max = {}
+    min_shift = edges.shape[1] / 100
+    for i, [[rho, theta]] in enumerate(lines):
+        if is_vertical(theta, delta):
+            if ('rho' not in data_min or data_min['rho'] > rho) and rho > min_shift:
+                data_min['rho'] = rho
+                data_min['theta'] = theta
+                data_min['i'] = i
+            if ('rho' not in data_max or data_max['rho'] < rho) and rho < edges.shape[1] - min_shift:
+                data_max['rho'] = rho
+                data_max['theta'] = theta
+                data_max['i'] = i
+
+    if data_min['i'] < data_max['i']:
+        return data_min['rho'], data_min['theta']
+    else:
+        return data_max['rho'], data_min['theta']
 
 
 def get_horizontal_axis(edges, part=2, delta=5e-3):
@@ -51,24 +62,27 @@ def get_horizontal_axis(edges, part=2, delta=5e-3):
     # точность определения угла в радианах, минимальный порог чила пикселей на линии,
     # при котором линия попадет в output, в итоге возвращает массив из значений вида [[rho, theta]],
     # отсортированный по убыванию числа точек, соответствующих данной линии
-    lines = cv2.HoughLines(edges, 1, np.pi/180, edges.shape[1] // part)
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, edges.shape[1] // part)
+
+    min_shift = edges.shape[1] / 100
     for [[rho, theta]] in lines:
-        if is_horizontal(theta, delta):
+        if is_horizontal(theta, delta) and edges.shape[0] / 2 < rho < edges.shape[0] - min_shift:
             return rho, theta
-    return None, None
+
+    return edges.shape[0], np.pi / 2
 
 
 def draw_lines_on_image(img, lines):
-    scale = 10**3
+    scale = 10 ** 3
     for [[rho, theta]] in lines:
         a = np.cos(theta)
         b = np.sin(theta)
-        x0 = a*rho
-        y0 = b*rho
-        x1 = int(x0 - scale*b)
-        y1 = int(y0 + scale*a)
-        x2 = int(x0 + scale*b)
-        y2 = int(y0 - scale*a)
+        x0 = a * rho
+        y0 = b * rho
+        x1 = int(x0 - scale * b)
+        y1 = int(y0 + scale * a)
+        x2 = int(x0 + scale * b)
+        y2 = int(y0 - scale * a)
 
         cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 2)
 
