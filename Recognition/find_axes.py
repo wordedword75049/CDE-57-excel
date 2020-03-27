@@ -26,17 +26,18 @@ def get_vertical_axis(edges, part=3, delta=5e-3):
     # точность определения угла в радианах, минимальный порог чила пикселей на линии,
     # при котором линия попадет в output, в итоге возвращает массив из значений вида [[rho, theta]],
     # отсортированный по убыванию числа точек, соответствующих данной линии
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, edges.shape[0] // part)
+    image_height, image_width = edges.shape
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, image_height // part)
     data_min = {}
     data_max = {}
-    min_shift = edges.shape[1] / 100
+    min_shift = image_width / 100
     for i, [[rho, theta]] in enumerate(lines):
         if is_vertical(theta, delta):
             if ('rho' not in data_min or data_min['rho'] > rho) and rho > min_shift:
                 data_min['rho'] = rho
                 data_min['theta'] = theta
                 data_min['i'] = i
-            if ('rho' not in data_max or data_max['rho'] < rho) and rho < edges.shape[1] - min_shift:
+            if ('rho' not in data_max or data_max['rho'] < rho) and rho < image_width - min_shift:
                 data_max['rho'] = rho
                 data_max['theta'] = theta
                 data_max['i'] = i
@@ -62,11 +63,12 @@ def get_horizontal_axis(edges, part=2, delta=5e-3):
     # точность определения угла в радианах, минимальный порог чила пикселей на линии,
     # при котором линия попадет в output, в итоге возвращает массив из значений вида [[rho, theta]],
     # отсортированный по убыванию числа точек, соответствующих данной линии
-    lines = cv2.HoughLines(edges, 1, np.pi / 180, edges.shape[1] // part)
+    image_height, image_width = edges.shape
+    lines = cv2.HoughLines(edges, 1, np.pi / 180, image_width // part)
 
-    min_shift = edges.shape[1] / 100
+    min_shift = image_height / 100
     for [[rho, theta]] in lines:
-        if is_horizontal(theta, delta) and edges.shape[0] / 2 < rho < edges.shape[0] - min_shift:
+        if is_horizontal(theta, delta) and image_height / 2 < rho < image_height - min_shift:
             return rho, theta
 
     return edges.shape[0], np.pi / 2
