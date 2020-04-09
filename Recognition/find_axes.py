@@ -30,7 +30,10 @@ def get_vertical_axis(edges, part=3, delta=5e-3):
     lines = cv2.HoughLines(edges, 1, np.pi / 180, image_height // part)
     data_min = {}
     data_max = {}
+    # min_shift - минимальное расстояние от границы картинки, при котором линия может считаться осью
     min_shift = image_width / 100
+    # lines отсортирован по убыванию числа голосов,
+    # меньший индекс в этом списке означает большее число голосов
     for i, [[rho, theta]] in enumerate(lines):
         if is_vertical(theta, delta):
             if ('rho' not in data_min or data_min['rho'] > rho) and rho > min_shift:
@@ -42,10 +45,7 @@ def get_vertical_axis(edges, part=3, delta=5e-3):
                 data_max['theta'] = theta
                 data_max['i'] = i
 
-    if data_min['i'] < data_max['i']:
-        return data_min['rho'], data_min['theta']
-    else:
-        return data_max['rho'], data_min['theta']
+    return [[data_min['rho'], data_min['theta']], [data_max['rho'], data_max['theta']]]
 
 
 def get_horizontal_axis(edges, part=2, delta=5e-3):
@@ -66,12 +66,13 @@ def get_horizontal_axis(edges, part=2, delta=5e-3):
     image_height, image_width = edges.shape
     lines = cv2.HoughLines(edges, 1, np.pi / 180, image_width // part)
 
+    # min_shift - минимальное расстояние от границы картинки, при котором линия может считаться осью
     min_shift = image_height / 100
     for [[rho, theta]] in lines:
         if is_horizontal(theta, delta) and image_height / 2 < rho < image_height - min_shift:
-            return rho, theta
+            return [[rho, theta]]
 
-    return edges.shape[0], np.pi / 2
+    return [[edges.shape[0], np.pi / 2]]
 
 
 def draw_lines_on_image(img, lines):
@@ -99,11 +100,13 @@ def find_axes(name):
 
     lines = []
 
-    rho_vert, theta_vert = get_vertical_axis(edges)
-    lines.append([[rho_vert, theta_vert]])
+    vert = get_vertical_axis(edges)
+    for line in vert:
+        lines.append([line])
 
-    rho_hor, theta_hor = get_horizontal_axis(edges)
-    lines.append([[rho_hor, theta_hor]])
+    hor = get_horizontal_axis(edges)
+    for line in hor:
+        lines.append([line])
 
     draw_lines_on_image(img, lines)
 
