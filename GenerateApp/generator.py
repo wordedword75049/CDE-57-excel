@@ -6,6 +6,7 @@ import sys
 import xlsxwriter
 from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
+import win32com.client as win32
 
 
 def generate(args):
@@ -35,7 +36,7 @@ def generate(args):
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 4
-        chart1.title = "Bar Chart"
+        chart1.title = ""
         chart1.y_axis.title = ''
         chart1.x_axis.title = ''
 
@@ -46,6 +47,19 @@ def generate(args):
         chart1.shape = 4
         OpenedWS.add_chart(chart1, "D3")
         OpenedWb.save('source.xlsx')
+        app = win32.Dispatch('Excel.Application')
+        cwd = os.getcwd()
+        workbook_file_name = cwd + '\\source.xlsx'
+        workbook = app.Workbooks.Open(Filename=workbook_file_name)
+
+        app.DisplayAlerts = False
+
+        for sheet in workbook.Worksheets:
+            for chartObject in sheet.ChartObjects():
+                chartObject.Activate()
+                chartObject.Chart.Export(cwd + '\\image.png')
+
+        workbook.Close(SaveChanges=False, Filename=workbook_file_name)
         os.chdir('..')
 
 
