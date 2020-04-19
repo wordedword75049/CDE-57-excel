@@ -9,13 +9,18 @@ from openpyxl.chart import BarChart, Reference
 
 
 def generate(args):
-    if not os.access(str(args.BasePath), os.F_OK):
-        os.mkdir(str(args.BasePath))
-    os.chdir(str(args.BasePath))
+    if os.access(str(args.BasePath), os.F_OK):
+        os.chdir(str(args.BasePath))
+    if not os.access(str(args.BaseName)+'\Data', os.F_OK):
+        os.makedirs(str(args.BaseName)+'\Data')
+    os.chdir(str(args.BaseName)+'\Data')
     for iteration in range(args.ChartsCount):
+        if not os.access(str(iteration+1), os.F_OK):
+            os.mkdir(str(iteration+1))
+        os.chdir(str(iteration+1))
         random.seed()
         ColumnCount = random.randint(5, 12)
-        workbook = xlsxwriter.Workbook('Table' + str(iteration + 1) + '.xlsx')
+        workbook = xlsxwriter.Workbook(str(iteration + 1) + '.xlsx')
         worksheet = workbook.add_worksheet()
         LowerBound = random.randint(100, 500)
         UpperBound = random.randint(600, 1000)
@@ -25,8 +30,8 @@ def generate(args):
             worksheet.write(column, 1, value)
         workbook.close()
 
-        OpenedWb = load_workbook('Table' + str(iteration + 1) + '.xlsx')
-        OpenedWS = OpenedWb.get_sheet_by_name('Sheet1')
+        OpenedWb = load_workbook(str(iteration + 1) + '.xlsx')
+        OpenedWS = OpenedWb['Sheet1']
         chart1 = BarChart()
         chart1.type = "col"
         chart1.style = 4
@@ -40,7 +45,8 @@ def generate(args):
         chart1.set_categories(cats)
         chart1.shape = 4
         OpenedWS.add_chart(chart1, "D3")
-        OpenedWb.save('Table' + str(iteration + 1) + '.xlsx')
+        OpenedWb.save(str(iteration + 1) + '.xlsx')
+        os.chdir('..')
 
 
 
