@@ -20,7 +20,7 @@ def generate(args):
         os.chdir(str(iteration+1))
         random.seed()
         ColumnCount = random.randint(5, 12)
-        workbook = xlsxwriter.Workbook(str(iteration + 1) + '.xlsx')
+        workbook = xlsxwriter.Workbook('source.xlsx')
         worksheet = workbook.add_worksheet()
         LowerBound = random.randint(100, 500)
         UpperBound = random.randint(600, 1000)
@@ -30,7 +30,7 @@ def generate(args):
             worksheet.write(column, 1, value)
         workbook.close()
 
-        OpenedWb = load_workbook(str(iteration + 1) + '.xlsx')
+        OpenedWb = load_workbook('source.xlsx')
         OpenedWS = OpenedWb['Sheet1']
         chart1 = BarChart()
         chart1.type = "col"
@@ -45,7 +45,7 @@ def generate(args):
         chart1.set_categories(cats)
         chart1.shape = 4
         OpenedWS.add_chart(chart1, "D3")
-        OpenedWb.save(str(iteration + 1) + '.xlsx')
+        OpenedWb.save('source.xlsx')
         os.chdir('..')
 
 
