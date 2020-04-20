@@ -8,59 +8,62 @@ from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
 import win32com.client as win32
 
+def create_table(path):
+    random.seed()
+    ColumnCount = random.randint(5, 12)
+    full_path = str(path) + '\source.xlsx'
+    workbook = xlsxwriter.Workbook(full_path )
+
+    worksheet = workbook.add_worksheet()
+    LowerBound = random.randint(100, 500)
+    UpperBound = random.randint(600, 1000)
+    for column in range(ColumnCount):
+        value = random.randint(LowerBound, UpperBound)
+        worksheet.write(column, 0, column + 1)
+        worksheet.write(column, 1, value)
+    workbook.close()
+
+    OpenedWb = load_workbook(full_path )
+    OpenedWS = OpenedWb['Sheet1']
+    chart1 = BarChart()
+    chart1.type = "col"
+    chart1.style = 4
+    chart1.title = ""
+    chart1.y_axis.title = ''
+    chart1.x_axis.title = ''
+
+    data = Reference(OpenedWS, min_col=2, min_row=1, max_row=ColumnCount)
+    cats = Reference(OpenedWS, min_col=1, min_row=1, max_row=ColumnCount)
+    chart1.add_data(data, titles_from_data=False)
+    chart1.set_categories(cats)
+    chart1.shape = 4
+    OpenedWS.add_chart(chart1, "D3")
+    OpenedWb.save(full_path)
+
+def export_image(path):
+    app = win32.Dispatch('Excel.Application')
+    workbook_file_name = str(path) +  '\\source.xlsx'
+    workbook = app.Workbooks.Open(Filename=workbook_file_name)
+    app.DisplayAlerts = False
+
+    for sheet in workbook.Worksheets:
+        for chartObject in sheet.ChartObjects():
+            chartObject.Activate()
+            image_file_name=str(path) +  '\\image.png'
+            chartObject.Chart.Export(image_file_name)
+    workbook.Close(SaveChanges=False, Filename=workbook_file_name)
+
 
 def generate(args):
-    if os.access(str(args.BasePath), os.F_OK):
-        os.chdir(str(args.BasePath))
-    if not os.access(str(args.BaseName)+'\Data', os.F_OK):
-        os.makedirs(str(args.BaseName)+'\Data')
-    os.chdir(str(args.BaseName)+'\Data')
+    dirpath = os.path.join(args.BasePath, args.BaseName + '\\Data')
+    if not os.access(str(dirpath), os.F_OK):
+        os.makedirs(str(dirpath))
     for iteration in range(args.ChartsCount):
-        if not os.access(str(iteration+1), os.F_OK):
-            os.mkdir(str(iteration+1))
-        os.chdir(str(iteration+1))
-        random.seed()
-        ColumnCount = random.randint(5, 12)
-        workbook = xlsxwriter.Workbook('source.xlsx')
-        worksheet = workbook.add_worksheet()
-        LowerBound = random.randint(100, 500)
-        UpperBound = random.randint(600, 1000)
-        for column in range(ColumnCount):
-            value = random.randint(LowerBound, UpperBound)
-            worksheet.write(column, 0, column + 1)
-            worksheet.write(column, 1, value)
-        workbook.close()
-
-        OpenedWb = load_workbook('source.xlsx')
-        OpenedWS = OpenedWb['Sheet1']
-        chart1 = BarChart()
-        chart1.type = "col"
-        chart1.style = 4
-        chart1.title = ""
-        chart1.y_axis.title = ''
-        chart1.x_axis.title = ''
-
-        data = Reference(OpenedWS, min_col=2, min_row=1, max_row=ColumnCount)
-        cats = Reference(OpenedWS, min_col=1, min_row=1, max_row=ColumnCount)
-        chart1.add_data(data, titles_from_data=False)
-        chart1.set_categories(cats)
-        chart1.shape = 4
-        OpenedWS.add_chart(chart1, "D3")
-        OpenedWb.save('source.xlsx')
-        app = win32.Dispatch('Excel.Application')
-        cwd = os.getcwd()
-        workbook_file_name = cwd + '\\source.xlsx'
-        workbook = app.Workbooks.Open(Filename=workbook_file_name)
-
-        app.DisplayAlerts = False
-
-        for sheet in workbook.Worksheets:
-            for chartObject in sheet.ChartObjects():
-                chartObject.Activate()
-                chartObject.Chart.Export(cwd + '\\image.png')
-
-        workbook.Close(SaveChanges=False, Filename=workbook_file_name)
-        os.chdir('..')
+        iteration_path = os.path.join(dirpath, str(iteration+1))
+        if not os.access(iteration_path, os.F_OK):
+            os.makedirs(iteration_path)
+        create_table(iteration_path)
+        export_image(iteration_path)
 
 
 
