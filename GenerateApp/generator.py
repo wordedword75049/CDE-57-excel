@@ -41,9 +41,9 @@ def generate_labels(size):
 
     return labels
 
-def create_table(path):
+def create_table(path, MaxColumnNumber):
     random.seed()
-    ColumnCount = random.randint(5, 12)
+    ColumnCount = random.randint(5, MaxColumnNumber)
     full_path = str(path) + '\source.xlsx'
     workbook = xlsxwriter.Workbook(full_path )
 
@@ -101,7 +101,7 @@ def generate(args):
         iteration_path = os.path.join(dirpath, str(iteration+1))
         if not os.access(iteration_path, os.F_OK):
             os.makedirs(iteration_path)
-        create_table(iteration_path)
+        create_table(iteration_path, args.MaxColumnsCount)
         export_image(iteration_path)
 
 
@@ -110,9 +110,10 @@ def parse(argv):
     parser = argparse.ArgumentParser(description="""
      Parser of image and tables generator
         """, formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('ChartsCount', action='store', type=int)
     parser.add_argument('BasePath', action='store', type=pathlib.Path)
     parser.add_argument('BaseName', action='store', type=str)
+    parser.add_argument('ChartsCount', action='store', type=int)
+    parser.add_argument('MaxColumnsCount', action='store', type=int)
 
     return parser.parse_args(argv[1:])
 
