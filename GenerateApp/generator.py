@@ -4,9 +4,42 @@ import pathlib
 import random
 import sys
 import xlsxwriter
+import csv
 from openpyxl import load_workbook
 from openpyxl.chart import BarChart, Reference
 import win32com.client as win32
+from openpyxl.chart.layout import Layout, ManualLayout
+
+
+def read_csv(rowNumber, filename):
+    csv_path = filename
+    extracted_data = []
+    with open(csv_path, "r") as f_obj:
+        reader = csv.reader(f_obj)
+        for row in reader:
+            extracted_data.append(row[rowNumber])
+    return extracted_data
+
+def generate_labels(size):
+    labels = []
+    random.seed()
+    mode = random.randint(1, 4)
+    if mode == 1:
+        labels = list(range(1, size+1))
+    elif mode == 2:
+        data = read_csv(1, "constituents.csv")
+        labels = random.sample(data[1:], size)
+    elif mode == 3:
+        start_year = random.randint(2010, 2020)
+        labels = list(range(start_year-size, start_year))
+    elif mode == 4:
+        months = read_csv(0, "months.csv")
+        start_year = random.randint(2010-(size // 12), 2020-(size // 12))
+        start_month = random.randint(1,12)
+        for i in range(size):
+            labels.append(str(months[(start_month + i) % 12]) + " " + str(start_year+((start_month + i) // 12)))
+
+    return labels
 
 def create_table(path):
     random.seed()
@@ -17,9 +50,10 @@ def create_table(path):
     worksheet = workbook.add_worksheet()
     LowerBound = random.randint(100, 500)
     UpperBound = random.randint(600, 1000)
+    x_label = generate_labels(ColumnCount)
     for column in range(ColumnCount):
         value = random.randint(LowerBound, UpperBound)
-        worksheet.write(column, 0, column + 1)
+        worksheet.write(column, 0, x_label[column])
         worksheet.write(column, 1, value)
     workbook.close()
 
@@ -27,7 +61,7 @@ def create_table(path):
     OpenedWS = OpenedWb['Sheet1']
     chart1 = BarChart()
     chart1.type = "col"
-    chart1.style = 4
+    chart1.style = random.randint(1, 8)
     chart1.title = ""
     chart1.y_axis.title = ''
     chart1.x_axis.title = ''
@@ -36,7 +70,12 @@ def create_table(path):
     cats = Reference(OpenedWS, min_col=1, min_row=1, max_row=ColumnCount)
     chart1.add_data(data, titles_from_data=False)
     chart1.set_categories(cats)
-    chart1.shape = 4
+    chart1.shape = 10
+    chart1.layout = Layout(
+        manualLayout=ManualLayout(
+            h=0.85, w=0.85,
+        )
+    )
     OpenedWS.add_chart(chart1, "D3")
     OpenedWb.save(full_path)
 
