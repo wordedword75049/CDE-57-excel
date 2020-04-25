@@ -33,12 +33,12 @@ def setup_processor():
 
 
 # Recognize a file at filePath and save result to resultFilePath
-def recognize_file(file_path, result_file_path, language, output_format):
+def recognize_file(file_path, result_file_path, language, output_format, region):
     print("Uploading..")
     settings = ProcessingSettings()
     settings.Language = language
     settings.OutputFormat = output_format
-    task = processor.process_image(file_path, settings)
+    task = processor.process_image(file_path, settings, region)
     if task is None:
         print("Error")
         return
@@ -97,26 +97,27 @@ def parse_xml(target):
 
 
 def draw_rectangles(img, bounds):
-    for rectangle in bounds:
-        pos = [int(rectangle['left']),
-               int(rectangle['top']),
-               int(rectangle['right']),
-               int(rectangle['bottom'])]
-        n = len(pos)
-        # draw all possible combinations
-        for i in range(n):
-            if i % 2 == 0:
-                cv2.line(img,
-                         (pos[i], pos[(i + 1) % n]),
-                         (pos[i], pos[(i + 3) % n]),
-                         (0, 255, 0),
-                         2)
-            else:
-                cv2.line(img,
-                         (pos[(i + 1) % n], pos[i]),
-                         (pos[(i + 3) % n], pos[i]),
-                         (0, 255, 0),
-                         2)
+    for b in bounds:
+        for rectangle in b:
+            pos = [int(rectangle['left']),
+                   int(rectangle['top']),
+                   int(rectangle['right']),
+                   int(rectangle['bottom'])]
+            n = len(pos)
+            # draw all possible combinations
+            for i in range(n):
+                if i % 2 == 0:
+                    cv2.line(img,
+                             (pos[i], pos[(i + 1) % n]),
+                             (pos[i], pos[(i + 3) % n]),
+                             (0, 255, 0),
+                             2)
+                else:
+                    cv2.line(img,
+                             (pos[(i + 1) % n], pos[i]),
+                             (pos[(i + 3) % n], pos[i]),
+                             (0, 255, 0),
+                             2)
 
 
 def main():
@@ -132,16 +133,36 @@ def main():
     target_file = args.target_file
     language = args.language
     output_format = args.format
+    max_y, max_x = img.shape[:2]
+    min_y, min_x = 0, 0
+    # отсутп от границ, нужен для корректной работы с регионами
+    shift = 1
+    min_x += shift
+    min_y += shift
+    max_x -= shift
+    max_y -= shift
+    axes = {'left': 48, 'right': 746, 'bottom': 446}
+
+    left_region = [str(elem) for elem in [min_x, min_y, axes['left'], max_y]]
+    right_region = [str(elem) for elem in [axes['right'], min_y, max_x, max_y]]
+    bottom_region = [str(elem) for elem in [min_x, axes['bottom'], max_x, max_y]]
+
+    regions = [', '.join(left_region),
+               ', '.join(right_region),
+               ', '.join(bottom_region)]
 
     if os.path.isfile(source_file):
-        recognize_file(source_file, target_file, language, output_format)
-        bounds = parse_xml(target_file)
+        bounds = []
+        for region in regions:
+            recognize_file(source_file, target_file, language, output_format, region)
+            bounds.append(parse_xml(target_file))
         draw_rectangles(img, bounds)
     else:
         print("No such file: {}".format(source_file))
 
     cv2.imshow('image', img)
     cv2.waitKey(0)
+    os.remove(target_file)
 
 
 if __name__ == "__main__":

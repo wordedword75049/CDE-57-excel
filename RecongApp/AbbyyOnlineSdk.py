@@ -44,11 +44,12 @@ class AbbyyOnlineSdk:
 	Password = "password"
 	Proxies = {}
 
-	def process_image(self, file_path, settings):
+	def process_image(self, file_path, settings, region):
 		url_params = {
 			"language": settings.Language,
 			"oneTextLine": False,
-			"oneWordPerTextLine": False
+			"oneWordPerTextLine": False,
+			"region": region
 		}
 		request_url = self.get_request_url("processTextField")
 
