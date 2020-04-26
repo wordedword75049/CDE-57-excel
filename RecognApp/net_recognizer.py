@@ -1,8 +1,9 @@
 from PIL import Image, ImageDraw
 import numpy
 import random
+import matplotlib.pyplot as plt
+import string
 
-import pandas as pd
 import numpy as np
 
 from skimage.transform import resize
@@ -21,7 +22,7 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam
 from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
-#генерация изображений обучающей выборки
+
 def generate_images(amount_of_pictures = 1000, image_shape = (512, 512), rect_bottom = 450, betwin = 20, x_first = 40):
 
     number_weigt_dict = {7: 42, 6: 53, 5:70, 4:90, 8:35}
@@ -49,6 +50,19 @@ def generate_images(amount_of_pictures = 1000, image_shape = (512, 512), rect_bo
             img1_label.rectangle(shape, fill ="white")
         
             cur_x = cur_x+number_weigt_dict[columns_amount]+betwin
+            
+        img1.text((470, 100), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+        img1.text((470, 150), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+        img1.text((470, 200), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+        img1.text((470, 250), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+        img1.text((470, 300), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+        img1.text((470, 350), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
+
+        img1.text((50, 470), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3)))
+        img1.text((150, 470), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3)))
+        img1.text((250, 470), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3)))
+        img1.text((350, 470), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3)))
+        img1.text((450, 470), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(3)))
         
         img.save("images/{}.png".format(i))
         img_label.save("labels/{}.png".format(i))
@@ -57,7 +71,7 @@ def generate_images(amount_of_pictures = 1000, image_shape = (512, 512), rect_bo
         img_label.close()
     
     
-#загружает модель
+    
 def load_model(model_name='model_exp.h5'):
     def conv2d_block(input_tensor, n_filters, kernel_size = 3, batchnorm = True):
         # first layer
@@ -120,7 +134,7 @@ def load_model(model_name='model_exp.h5'):
     model.load_weights(model_name)
     return model
 
-#прежде чем запускать get_mask нужно один раз загрузить модель
+
 def get_mask(image_name, image_size=(512, 512, 1)):
     X_graph = []
     img_graph = img_to_array(load_img(image_name, grayscale=True))
@@ -130,8 +144,15 @@ def get_mask(image_name, image_size=(512, 512, 1)):
     X_graph = np.array(X_graph)
     
     preds_graph = model.predict(X_graph, verbose=1)
+    preds_graph_t = (preds_graph > 0.5).astype(np.uint8)
     
-    return preds_graph
+    return preds_graph_t
+
+
+def plot_result(X, binary_preds, ix=0):
+    fig, ax = plt.subplots(1, 2, figsize=(20, 10))
+    ax[0].imshow(X[ix, ..., 0], cmap='seismic')
+    ax[1].imshow(binary_preds[ix].squeeze(), vmin=0, vmax=1)
     
     
     
