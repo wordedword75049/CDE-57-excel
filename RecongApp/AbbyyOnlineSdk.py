@@ -5,13 +5,7 @@
 import shutil
 
 import xml.dom.minidom
-try:
-	import requests
-except ImportError:
-	print("You need the requests library to be installed in order to use this sample.")
-	print("Run 'pip install requests' to fix it.")
-
-	exit()
+import requests
 
 
 class ProcessingSettings:
@@ -32,14 +26,7 @@ class Task:
 
 
 class AbbyyOnlineSdk:
-	# Warning! This is for easier out-of-the box usage of the sample only. Change to https:// for production use
-	# Change to http://cloud-westus.ocrsdk.com if you created your application in US location	
 	ServerUrl = "http://cloud-eu.ocrsdk.com/"
-
-	# To create an application and obtain a password,
-	# register at https://cloud.ocrsdk.com/Account/Register
-	# More info on getting your application id and password at
-	# https://ocrsdk.com/documentation/faq/#faq3
 	ApplicationId = "user"
 	Password = "password"
 	Proxies = {}

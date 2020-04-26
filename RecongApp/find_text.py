@@ -1,7 +1,3 @@
-#!/usr/bin/python
-
-# Usage: find_text.py <input file> <output file> [-l <Language>] [-pdf|-txt|-rtf|-docx|-xml]
-
 import argparse
 import os
 import time
@@ -99,25 +95,11 @@ def parse_xml(target):
 def draw_rectangles(img, bounds):
     for b in bounds:
         for rectangle in b:
-            pos = [int(rectangle['left']),
-                   int(rectangle['top']),
-                   int(rectangle['right']),
-                   int(rectangle['bottom'])]
-            n = len(pos)
-            # draw all possible combinations
-            for i in range(n):
-                if i % 2 == 0:
-                    cv2.line(img,
-                             (pos[i], pos[(i + 1) % n]),
-                             (pos[i], pos[(i + 3) % n]),
-                             (0, 255, 0),
-                             2)
-                else:
-                    cv2.line(img,
-                             (pos[(i + 1) % n], pos[i]),
-                             (pos[(i + 3) % n], pos[i]),
-                             (0, 255, 0),
-                             2)
+            cv2.rectangle(img,
+                          (int(rectangle['left']), int(rectangle['top'])),
+                          (int(rectangle['right']), int(rectangle['bottom'])),
+                          (0, 255, 0),
+                          2)
 
 
 def main():
