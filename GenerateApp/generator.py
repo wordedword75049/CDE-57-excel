@@ -71,7 +71,7 @@ def create_table(path, MaxColumnNumber):
     chart1.add_data(data, titles_from_data=False)
     chart1.set_categories(cats)
     chart1.shape = 10
-    chart1.layout = Layout(
+    chart1.layout = Layout( #документация по параметрам layout диаграммы - https://openpyxl.readthedocs.io/en/stable/charts/chart_layout.html#size-and-position
         manualLayout=ManualLayout(
             h=0.85, w=0.85,
         )
