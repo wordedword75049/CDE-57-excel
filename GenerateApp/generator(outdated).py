@@ -5,7 +5,10 @@ import random
 import sys
 import xlsxwriter
 import csv
+from openpyxl import load_workbook
+from openpyxl.chart import BarChart, Reference
 import win32com.client as win32
+from openpyxl.chart.layout import Layout, ManualLayout
 
 
 def read_csv(rowNumber, filename):
@@ -55,28 +58,29 @@ def create_table(path, MaxColumnNumber, textmode):
         value = random.randint(LowerBound, UpperBound)
         worksheet.write(column, 0, x_label[column])
         worksheet.write(column, 1, value)
-
-    chart = workbook.add_chart({'type': 'column'})
-    colors = read_csv(0, "res\colors.csv")
-    selected_color = random.choice(colors)
-    chart.add_series({
-        'categories': '=Sheet1!$A$1:$A$' + str(ColumnCount),
-        'values': '=Sheet1!$B$1:$B$' + str(ColumnCount),
-        'fill': {'color': selected_color},
-    })
-    chart.set_y_axis({
-        'major_gridlines': {'visible': True,
-                            'line': {'width': 0.5, 'color': 'black'},}
-    })
-
-    chart.set_x_axis({
-        'num_font': {'rotation': -90,
-                     'size': 6.5 * (1 + 0.5*(ColumnCount//30)),}
-    })
-    chart.set_legend({'none': True})
-    chart.set_size({'x_scale': (1 + 0.5*(ColumnCount//20)), 'y_scale': (1 + 0.5*(ColumnCount//20))})
-    worksheet.insert_chart('D3', chart)
     workbook.close()
+
+    OpenedWb = load_workbook(full_path )
+    OpenedWS = OpenedWb['Sheet1']
+    chart1 = BarChart()
+    chart1.type = "col"
+    chart1.style = random.randint(1, 8)
+    chart1.title = ""
+    chart1.y_axis.title = ''
+    chart1.x_axis.title = ''
+
+    data = Reference(OpenedWS, min_col=2, min_row=1, max_row=ColumnCount)
+    cats = Reference(OpenedWS, min_col=1, min_row=1, max_row=ColumnCount)
+    chart1.add_data(data, titles_from_data= True)
+    chart1.set_categories(cats)
+    chart1.shape = 10
+    chart1.layout = Layout( #документация по параметрам layout диаграммы - https://openpyxl.readthedocs.io/en/stable/charts/chart_layout.html#size-and-position
+        manualLayout=ManualLayout(
+            h=0.85, w=0.85,
+        )
+    )
+    OpenedWS.add_chart(chart1, "D3")
+    OpenedWb.save(full_path)
 
 def export_image(path):
     app = win32.Dispatch('Excel.Application')
