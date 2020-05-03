@@ -50,6 +50,8 @@ def generate_images(amount_of_pictures = 1000, image_shape = (512, 512), rect_bo
             img1_label.rectangle(shape, fill ="white")
         
             cur_x = cur_x+number_weigt_dict[columns_amount]+betwin
+	
+	#adding random words from letters and numbers for better diagram imitation. It increase quality
             
         img1.text((470, 100), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
         img1.text((470, 150), ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(5)))
