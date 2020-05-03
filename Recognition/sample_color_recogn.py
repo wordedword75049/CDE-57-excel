@@ -107,11 +107,13 @@ def merge_rectangle(boarder, column, max_y):
                         column[j] = [[]]
     return boarder
 
+
+
 def recogn_column(name):
     num_clasters = 10
     diagram_image = cv2.imread(name)
-    diagram_image = cv2.cvtColor(diagram_image, cv2.COLOR_BGR2RGB)
     cv2.imshow('diagram_image', diagram_image)
+    diagram_image = cv2.cvtColor(diagram_image, cv2.COLOR_BGR2RGB)
     img = diagram_image
     img = img.reshape((img.shape[0] * img.shape[1], 3))
     clt = KMeans(num_clasters)
@@ -129,13 +131,16 @@ def recogn_column(name):
     boarder, column = divided_rectangle(boarder, max_y)
     boarder = merge_rectangle(boarder, column, max_y)
     # начертание границ и текста на изображение
+    y_pixel_val = [[]]
     for i in boarder:
         if (i != [[]]):
             cv2.drawContours(diagram_image, [i], 0, (255, 0, 0), 2)
             mid = min(i[0][0], min(i[2][0], min(i[3][0], i[1][0]))) - 10
             range_ = i[0][1] - i[3][1]
             mid_range = i[3][1] - 15
+            y_pixel_val.append([mid, range_])
             cv2.putText(diagram_image, "%d" % int(range_), (int(mid), int(mid_range)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+    diagram_image = cv2.cvtColor(diagram_image, cv2.COLOR_RGB2BGR)
     cv2.imshow('image', diagram_image)
     cv2.waitKey(0)
 
