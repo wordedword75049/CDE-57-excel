@@ -50,7 +50,7 @@ def create_table(path, MaxColumnNumber, textmode):
     worksheet = workbook.add_worksheet()
     LowerBound = random.randint(100, 500)
     UpperBound = random.randint(600, 1000)
-    x_label = generate_labels(ColumnCount, textmode)
+    x_label = generate_labels(ColumnCount, textmode[0])
     for column in range(ColumnCount):
         value = random.randint(LowerBound, UpperBound)
         worksheet.write(column, 0, x_label[column])
@@ -70,7 +70,7 @@ def create_table(path, MaxColumnNumber, textmode):
     })
 
     chart.set_x_axis({
-        'num_font': {'rotation': -90,
+        'num_font': {'rotation': (-90)*textmode[1],
                      'size': 6.5 * (1 + 0.5*(ColumnCount//30)),}
     })
     chart.set_legend({'none': True})
@@ -98,6 +98,10 @@ def generate(args):
         mode = 0
     elif args.TextMode == "long":
         mode = 1
+    if args.TextLayout == "horizontal":
+        turn = 0
+    elif args.TextLayout == "vertical":
+        turn = 1
     dirpath = os.path.join(args.BasePath, args.BaseName + '\\Data')
     if not os.access(str(dirpath), os.F_OK):
         os.makedirs(str(dirpath))
@@ -105,7 +109,7 @@ def generate(args):
         iteration_path = os.path.join(dirpath, str(iteration+1))
         if not os.access(iteration_path, os.F_OK):
             os.makedirs(iteration_path)
-        create_table(iteration_path, args.MaxColumnsCount, mode)
+        create_table(iteration_path, args.MaxColumnsCount, (mode, turn))
         export_image(iteration_path)
 
 
@@ -119,6 +123,7 @@ def parse(argv):
     parser.add_argument('ChartsCount', action='store', type=int)
     parser.add_argument('MaxColumnsCount', action='store', type=int)
     parser.add_argument('TextMode', action='store', type=str)
+    parser.add_argument('TextLayout', action='store', type=str)
 
     return parser.parse_args(argv[1:])
 
