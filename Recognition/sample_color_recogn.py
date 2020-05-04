@@ -55,13 +55,13 @@ def rectangle_check(cluster, img):
             usedEdge = edge1
             if cv2.norm(edge2) > cv2.norm(edge1):
                 usedEdge = edge2
-            reference = (1,0)
+            reference = (1, 0)
             a = reference[0]*usedEdge[0] + reference[1]*usedEdge[1]
             b = cv2.norm(reference) * cv2.norm(usedEdge)
             angle = 180.0/math.pi * math.acos(a / b)
             #отбрасываем прямоугольники стоящие под кглом к осям, а так же слишком маленькие которые являются точками,
             #или же слишком большие(например сам прямоугольник картинки)
-            if area > 500 and area < 100000 and (angle == 90.0 or angle == 180.0 or angle == 0.0):
+            if area > 1000 and area < 100000 and (angle == 90.0 or angle == 180.0 or angle == 0.0):
                 boarder.append(box)
                 if (max(box[0][1], max(box[1][1], max(box[2][1], box[3][1]))) > max_y):
                     max_y =  max(box[0][1], max(box[1][1], max(box[2][1], box[3][1])))
@@ -73,7 +73,7 @@ def divided_rectangle(boarder, max_y):
     column = [[[]]]
     for i in range(len(boarder)):
         cur = boarder[i]
-        if (max(cur[0][1], max(cur[1][1], max(cur[2][1], cur[3][1]))) != max_y):
+        if (abs(max(cur[0][1], max(cur[1][1], max(cur[2][1], cur[3][1]))) - max_y) > 2):
             column.append(cur)
             boarder[i] = [[]]
     column.remove([[]])
@@ -109,9 +109,7 @@ def merge_rectangle(boarder, column, max_y):
 
 
 
-def recogn_column(name):
-    num_clasters = 10
-    diagram_image = cv2.imread(name)
+def recogn_column(diagram_image, num_clasters = 10):
     cv2.imshow('diagram_image', diagram_image)
     diagram_image = cv2.cvtColor(diagram_image, cv2.COLOR_BGR2RGB)
     img = diagram_image
@@ -130,18 +128,6 @@ def recogn_column(name):
     boarder, max_y = rectangle_check(cluster, diagram_image)
     boarder, column = divided_rectangle(boarder, max_y)
     boarder = merge_rectangle(boarder, column, max_y)
-    # начертание границ и текста на изображение
-    y_pixel_val = [[]]
-    for i in boarder:
-        if (i != [[]]):
-            cv2.drawContours(diagram_image, [i], 0, (255, 0, 0), 2)
-            mid = min(i[0][0], min(i[2][0], min(i[3][0], i[1][0]))) - 10
-            range_ = i[0][1] - i[3][1]
-            mid_range = i[3][1] - 15
-            y_pixel_val.append([mid, range_])
-            cv2.putText(diagram_image, "%d" % int(range_), (int(mid), int(mid_range)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-    diagram_image = cv2.cvtColor(diagram_image, cv2.COLOR_RGB2BGR)
-    cv2.imshow('image', diagram_image)
-    cv2.waitKey(0)
+    #возвращение границ исходных столбиков
+    return boarder
 
-recogn_column(sys.argv[1])
