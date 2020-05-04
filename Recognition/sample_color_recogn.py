@@ -5,6 +5,7 @@ import argparse
 import cv2
 import numpy as np
 import math
+import column
 from collections import namedtuple
 import random
 import sys
