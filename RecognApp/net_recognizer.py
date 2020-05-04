@@ -137,7 +137,7 @@ def load_model(model_name='model_exp.h5'):
     return model
 
 
-def get_mask(image_name, image_size=(512, 512, 1)):
+def get_mask(model, image_name, image_size=(512, 512, 1)):
     X_graph = []
     img_graph = img_to_array(load_img(image_name, grayscale=True))
     img_graph = resize(img_graph, image_size, mode = 'constant', preserve_range= True)
