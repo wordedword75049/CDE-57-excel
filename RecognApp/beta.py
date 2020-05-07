@@ -15,7 +15,7 @@ import sys
 
 
 def coordinate_key(person):
-    return person.coordinate
+    return person.x_coordinate
 
 def x_val_for_column(array_of_column):
     a = sorted(array_of_column, key=coordinate_key)
@@ -32,6 +32,7 @@ def x_val_for_column(array_of_column):
     return a
 
 
+color_black = (0, 0, 0)
 #нахождение границ столбиков
 diagram_image = cv2.imread(sys.argv[1])
 boarder = color_recogn.recogn_column(diagram_image, 10)
@@ -62,14 +63,17 @@ array_of_column = color_recogn.drow_boarder(diagram_image, boarder)
 #заполнение значений столбиков
 a = x_val_for_column(array_of_column)
 
+
+parse_text.set_coefficients(bounds[0], text[0])
+
+for i in range(len(a)):
+    a[i].y_val = parse_text.get_value(a[i].y_coordinate)
+
+for i in range(len(a)):
+    print('№', i, '| название', a[i].x_val, '| знаечние', a[i].y_val, '\n')
 for i in a:
-    print(i, ' ', i.coordinate, ' ', i.x_val, '\n')
-
-
-
-
-
-
+    cv2.putText(diagram_image, "%d" % int(i.y_val), (int(i.x_coordinate + 10), int(i.y_coordinate-10)), cv2.FONT_HERSHEY_SIMPLEX, 1,
+                        color_black, 2)
 
 cv2.imshow('image', diagram_image)
 cv2.waitKey(0)

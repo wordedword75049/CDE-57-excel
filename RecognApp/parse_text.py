@@ -1,6 +1,7 @@
 k, b = 0, 0
 
-def parse_text(part):
+
+def set_coefficients(bounds, part):
     new_part = []
     for word in part:
         new_word = ""
@@ -18,10 +19,6 @@ def parse_text(part):
         if new_word != '':
             new_word = int(new_word)
         new_part.append(new_word)
-    return new_part
-
-
-def set_coefficients(lines, new_part):
     indexes = []
     for i, word in enumerate(new_part):
         if word != '':
@@ -30,12 +27,14 @@ def set_coefficients(lines, new_part):
             break
 
     global k, b
-    k = 2 * (new_part[indexes[0]] - new_part[indexes[1]])\
-        /(lines[indexes[0]]["top"] + lines[indexes[0]]["bottom"] -
-          lines[indexes[1]]["top"] - lines[indexes[1]]["bottom"])
+    y_0 = (float(bounds[indexes[0]]["top"]) + float(bounds[indexes[0]]["bottom"])) / 2
+    y_1 = (float(bounds[indexes[1]]["top"]) + float(bounds[indexes[1]]["bottom"])) / 2
 
-    b = new_part[indexes[0]] - k * (lines[indexes[0]]["top"] + lines[indexes[0]]["bottom"])/2
-
+    v_0 = float(new_part[indexes[0]])
+    v_1 = float(new_part[indexes[1]])
+    k = (v_0 - v_1) \
+        / (y_0 - y_1)
+    b = v_1 - k * y_1
 
 def get_value(y):
     return k * y + b
