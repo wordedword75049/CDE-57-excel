@@ -1,8 +1,8 @@
 #-------------------------
 
-#Глобальные параметры генератора
+#ГЛОБАЛЬНЫЕ ПАРАМЕТРЫ ГЕНЕРАТОРА
 
-#базовый размер создаваемой диаграммы в excel
+#базовый размер создаваемой диаграммы в excel. Этот параметр задан библиотекой xlsxwriter
 DiagramSize = 480
 
 #вручную подобранный коэффициент для ширины "чистой" области графика диаграммы(без осей)
@@ -44,11 +44,11 @@ import win32com.client as win32
 import tkinter
 from tkinter import font as tkFont
 
-def string_width(string, font_size):
+def string_width(string, font_size): #определяет длину строки относительно кегеля и шрифта. Источник: https://stackoverflow.com/questions/32555015/how-to-get-the-visual-length-of-a-text-string-in-python
     tkinter.Frame().destroy()
     font_settings = tkFont.Font(family=LabelsFontName, size=int(font_size))
     width = font_settings.measure(string)
-    return width
+    return width                     #возвращает результат в пикселях(наиболее удобный формат)
 
 
 def read_csv(rowNumber, filename):
@@ -60,19 +60,19 @@ def read_csv(rowNumber, filename):
             extracted_data.append(row[rowNumber])
     return extracted_data
 
-def generate_labels(size, textmode):
+def generate_labels(size, textmode): #генеррует подписи для диаграммы случайным образом
     labels = []
     random.seed()
-    mode = random.randint(1, 4)
-    if mode == 1:
+    mode = random.randint(1, 4) #случайный выбор режима подписей
+    if mode == 1:   #числа от 1 до ColumnCount
         labels = list(range(1, size+1))
-    elif mode == 2:
+    elif mode == 2:  #названия существующих организаций
         data = read_csv(textmode, "res\constituents.csv")
         labels = random.sample(data[1:], size)
-    elif mode == 3:
+    elif mode == 3:   #номера годов (не может быть больше 2020)
         start_year = random.randint(2010, 2020)
         labels = list(range(start_year-size, start_year))
-    elif mode == 4:
+    elif mode == 4:    #месяц и номер года (не может быть больше 2020)
         months = read_csv(textmode, "res\months.csv")
         start_year = random.randint(2010-(size // 12), 2020-(size // 12))
         start_month = random.randint(1,12)
@@ -84,17 +84,17 @@ def generate_labels(size, textmode):
 
     return labels
 
-def set_label_orientation(mode, base_width, labels, size):
-    if mode == 1:
-        return -90
+def set_label_orientation(mode, base_width, labels, size): #задает положение подписей в диаграмме
+    if mode == 1:  #если выбран вертикальный режим
+        return -90    #возвращаем угол поворота на 90 градусов
     else:
-        for label in labels:
+        for label in labels:  #проходим по всем подписям одной диаграммы
             toStr = str(label)
-            words = toStr.split()
-            for each_word in words:
-                if string_width(each_word, size) > (base_width - 10):
-                    return -90
-        return 0
+            words = toStr.split()  #делим подписи на слова (может быть больше 1 слова)
+            for each_word in words:   #проверяем, что каждое слово из подписи
+                if string_width(each_word, size) > (base_width - 10): #не превосходит предоставленной ширины столбца с учетом отступа
+                    return -90 #если превосходит, то возвращаем угол поворота на 90 градусов
+        return 0 #если все подписи достаточно короткие, то текст не будет повернут
 
 def create_table(path, MaxColumnNumber, textmode):
     random.seed()
@@ -123,18 +123,19 @@ def create_table(path, MaxColumnNumber, textmode):
         'major_gridlines': {'visible': True,
                             'line': {'width': 0.5, 'color': 'black'},}
     })
-    plotarea_width = PurePlotWidth * (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)) * DiagramSize
-    eachcol_width = plotarea_width // ColumnCount
-    font_size = BaseFontSize * (1 + ScalingMultiplier*(ColumnCount//ScalingCounterFontSize))
+    plotarea_width = PurePlotWidth * (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)) * DiagramSize #подсчет "чистой" ширины диаграммы с учетом увеличений
+    eachcol_width = plotarea_width // ColumnCount #подсчет ширины одного столбика
+    font_size = BaseFontSize * (1 + ScalingMultiplier*(ColumnCount//ScalingCounterFontSize)) #подсчет размера шрифта с учетом увеличения
     chart.set_x_axis({
         'num_font': {
             'name': LabelsFontName,
-            'rotation': set_label_orientation(textmode[1], eachcol_width, x_label, font_size),
+            'rotation': set_label_orientation(textmode[1], eachcol_width, x_label, font_size), #угол поворота текста вычисляется в функции set_label_orientation
             'size': font_size,
         }
     })
     chart.set_legend({'none': True})
-    chart.set_size({'x_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)), 'y_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth))})
+    chart.set_size({'x_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)), #задаем размер диаграммы с учетом увеличения
+                    'y_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth))})
     worksheet.insert_chart('D3', chart)
     workbook.close()
 
