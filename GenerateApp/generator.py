@@ -1,3 +1,38 @@
+#-------------------------
+
+#Глобальные параметры генератора
+
+#базовый размер создаваемой диаграммы в excel
+DiagramSize = 480
+
+#вручную подобранный коэффициент для ширины "чистой" области графика диаграммы(без осей)
+PurePlotWidth = 0.94
+
+#параметры для увеличения размера диаграммы и шрифта подписей при большом числе столбцов
+#с ростом количества столбцов увеличение диаграммы сильно улучшает ее читаемость
+ScalingCounterWidth = 20
+ScalingCounterFontSize = 30
+ScalingMultiplier = 0.5
+
+#начальный размер шрифта подписей оси х
+BaseFontSize = 6.5
+
+#шрифт для подписей
+LabelsFontName = 'Arial'
+
+#нижняя граница рандома при выборе количества столбцов на диаграмме
+MinColumnNumber = 5
+
+#границы рандома при выборе нижней границы значений диаграммы
+RandLowLowerBound = 100
+RandLowUpperBound = 500
+
+#границы рандома при выборе верхней границы значенийдиаграммы
+RandUpLowerBound = 600
+RandUpUpperBound = 1000
+
+#-------------------------
+
 import argparse
 import os
 import pathlib
@@ -11,7 +46,7 @@ from tkinter import font as tkFont
 
 def string_width(string, font_size):
     tkinter.Frame().destroy()
-    font_settings = tkFont.Font(family='Arial', size=int(font_size))
+    font_settings = tkFont.Font(family=LabelsFontName, size=int(font_size))
     width = font_settings.measure(string)
     return width
 
@@ -49,27 +84,27 @@ def generate_labels(size, textmode):
 
     return labels
 
-def check_layout(mode,  base_width, labels, size):
+def set_label_orientation(mode, base_width, labels, size):
     if mode == 1:
-        return 1
+        return -90
     else:
         for label in labels:
             toStr = str(label)
             words = toStr.split()
             for each_word in words:
                 if string_width(each_word, size) > (base_width - 10):
-                    return 1
+                    return -90
         return 0
 
 def create_table(path, MaxColumnNumber, textmode):
     random.seed()
-    ColumnCount = random.randint(5, MaxColumnNumber)
+    ColumnCount = random.randint(MinColumnNumber, MaxColumnNumber)
     full_path = str(path) + '\source.xlsx'
     workbook = xlsxwriter.Workbook(full_path )
 
     worksheet = workbook.add_worksheet()
-    LowerBound = random.randint(100, 500)
-    UpperBound = random.randint(600, 1000)
+    LowerBound = random.randint(RandLowLowerBound, RandLowUpperBound)
+    UpperBound = random.randint(RandUpLowerBound, RandUpLowerBound)
     x_label = generate_labels(ColumnCount, textmode[0])
     for column in range(ColumnCount):
         value = random.randint(LowerBound, UpperBound)
@@ -88,18 +123,18 @@ def create_table(path, MaxColumnNumber, textmode):
         'major_gridlines': {'visible': True,
                             'line': {'width': 0.5, 'color': 'black'},}
     })
-    plotarea_width = 0.94 * (1 + 0.5 * (ColumnCount // 20)) * 480
+    plotarea_width = PurePlotWidth * (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)) * DiagramSize
     eachcol_width = plotarea_width // ColumnCount
-    font_size = 6.5 * (1 + 0.5*(ColumnCount//30))
+    font_size = BaseFontSize * (1 + ScalingMultiplier*(ColumnCount//ScalingCounterFontSize))
     chart.set_x_axis({
         'num_font': {
-            'name': 'Arial',
-            'rotation': (-90)*check_layout(textmode[1], eachcol_width, x_label, font_size),
+            'name': LabelsFontName,
+            'rotation': set_label_orientation(textmode[1], eachcol_width, x_label, font_size),
             'size': font_size,
         }
     })
     chart.set_legend({'none': True})
-    chart.set_size({'x_scale': (1 + 0.5 * (ColumnCount // 20)), 'y_scale': (1 + 0.5 * (ColumnCount // 20))})
+    chart.set_size({'x_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth)), 'y_scale': (1 + ScalingMultiplier * (ColumnCount // ScalingCounterWidth))})
     worksheet.insert_chart('D3', chart)
     workbook.close()
 
@@ -118,8 +153,6 @@ def export_image(path):
 
 
 def generate(args):
-    mode = 0
-    turn = 0
     if args.TextMode == "short":
         mode = 0
     elif args.TextMode == "long":
