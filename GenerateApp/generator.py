@@ -6,6 +6,14 @@ import sys
 import xlsxwriter
 import csv
 import win32com.client as win32
+import tkinter
+from tkinter import font as tkFont
+
+def string_width(string, font_size):
+    tkinter.Frame().destroy()
+    font_settings = tkFont.Font(family='Arial', size=int(font_size))
+    width = font_settings.measure(string)
+    return width
 
 
 def read_csv(rowNumber, filename):
@@ -41,6 +49,18 @@ def generate_labels(size, textmode):
 
     return labels
 
+def check_layout(mode,  base_width, labels, size):
+    if mode == 1:
+        return 1
+    else:
+        for label in labels:
+            toStr = str(label)
+            words = toStr.split()
+            for each_word in words:
+                if string_width(each_word, size) > (base_width - 10):
+                    return 1
+        return 0
+
 def create_table(path, MaxColumnNumber, textmode):
     random.seed()
     ColumnCount = random.randint(5, MaxColumnNumber)
@@ -68,13 +88,18 @@ def create_table(path, MaxColumnNumber, textmode):
         'major_gridlines': {'visible': True,
                             'line': {'width': 0.5, 'color': 'black'},}
     })
-
+    plotarea_width = 0.94 * (1 + 0.5 * (ColumnCount // 20)) * 480
+    eachcol_width = plotarea_width // ColumnCount
+    font_size = 6.5 * (1 + 0.5*(ColumnCount//30))
     chart.set_x_axis({
-        'num_font': {'rotation': (-90)*textmode[1],
-                     'size': 6.5 * (1 + 0.5*(ColumnCount//30)),}
+        'num_font': {
+            'name': 'Arial',
+            'rotation': (-90)*check_layout(textmode[1], eachcol_width, x_label, font_size),
+            'size': font_size,
+        }
     })
     chart.set_legend({'none': True})
-    chart.set_size({'x_scale': (1 + 0.5*(ColumnCount//20)), 'y_scale': (1 + 0.5*(ColumnCount//20))})
+    chart.set_size({'x_scale': (1 + 0.5 * (ColumnCount // 20)), 'y_scale': (1 + 0.5 * (ColumnCount // 20))})
     worksheet.insert_chart('D3', chart)
     workbook.close()
 
@@ -94,6 +119,7 @@ def export_image(path):
 
 def generate(args):
     mode = 0
+    turn = 0
     if args.TextMode == "short":
         mode = 0
     elif args.TextMode == "long":
