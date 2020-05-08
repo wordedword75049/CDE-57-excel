@@ -61,18 +61,22 @@ find_text.draw_rectangles(diagram_image, bounds)
 array_of_column = color_recogn.drow_boarder(diagram_image, boarder)
 
 #заполнение значений столбиков
-a = x_val_for_column(array_of_column)
+final_answer_column = x_val_for_column(array_of_column)
 
 
 parse_text.set_coefficients(bounds[0], text[0])
 
-for i in range(len(a)):
-    a[i].y_val = parse_text.get_value(a[i].y_coordinate)
+for i in range(len(final_answer_column)):
+    final_answer_column[i].y_val = parse_text.get_value(final_answer_column[i].y_coordinate)
 
-for i in range(len(a)):
-    print('№', i, '| название', a[i].x_val, '| знаечние', a[i].y_val, '\n')
-for i in a:
-    cv2.putText(diagram_image, "%d" % int(i.y_val), (int(i.x_coordinate + 10), int(i.y_coordinate-10)), cv2.FONT_HERSHEY_SIMPLEX, 1,
+#печать всех столбиков и их значение в консоль
+for i in range(len(final_answer_column)):
+    print('№', i, '| название', final_answer_column[i].x_val, '| знаечние', final_answer_column[i].y_val, '\n')
+
+
+#печать финального ответа на изображение
+for i in final_answer_column:
+    cv2.putText(diagram_image, i.y_val, (int(i.x_coordinate + 10), int(i.y_coordinate-10)), cv2.FONT_HERSHEY_SIMPLEX, 1,
                         color_black, 2)
 
 cv2.imshow('image', diagram_image)

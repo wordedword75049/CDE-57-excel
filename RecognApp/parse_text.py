@@ -1,7 +1,9 @@
 k, b = 0, 0
+name = ''
 
 
 def set_coefficients(bounds, part):
+    global name
     new_part = []
     for word in part:
         new_word = ""
@@ -11,10 +13,7 @@ def set_coefficients(bounds, part):
             else:
                 if len(new_word):
                     if i != len(word) - 1:
-                        if word[i].lower() == 'к':
-                            new_word += '000'
-                        elif word[i].lower() == 'м':
-                            new_word += '0' * 6
+                        name = word[i].lower()
                 break
         if new_word != '':
             new_word = int(new_word)
@@ -37,4 +36,4 @@ def set_coefficients(bounds, part):
     b = v_1 - k * y_1
 
 def get_value(y):
-    return k * y + b
+    return str(int(k * y + b)) + name
