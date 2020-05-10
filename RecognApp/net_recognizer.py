@@ -7,14 +7,20 @@ import string
 import numpy as np
 
 from skimage.transform import resize
+from skimage.morphology import label
+from sklearn.model_selection import train_test_split
 
-from keras.models import Model
-from keras.layers import Input, BatchNormalization, Activation, Dropout
+import tensorflow as tf
+
+from keras.models import Model, load_model
+from keras.layers import Input, BatchNormalization, Activation, Dense, Dropout
+from keras.layers.core import Lambda, RepeatVector, Reshape
 from keras.layers.convolutional import Conv2D, Conv2DTranspose
-from keras.layers.pooling import MaxPooling2D
-from keras.layers.merge import concatenate
+from keras.layers.pooling import MaxPooling2D, GlobalMaxPool2D
+from keras.layers.merge import concatenate, add
+from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam
-from keras.preprocessing.image import img_to_array, load_img
+from keras.preprocessing.image import ImageDataGenerator, array_to_img, img_to_array, load_img
 
 
 def generate_images(amount_of_pictures = 1000, image_shape = (512, 512), rect_bottom = 450, betwin = 20, x_first = 40):
