@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 import sys
+from find_text import find_text
 
 
 def is_vertical(theta, delta=np.pi * 5e-3):
@@ -108,10 +109,4 @@ def find_axes(name):
     for line in hor:
         lines.append([line])
 
-    draw_lines_on_image(img, lines)
-
-    cv2.imshow('image', img)
-    cv2.waitKey(0)
-
-
-find_axes(sys.argv[1])
+    return lines
