@@ -8,7 +8,7 @@ Install all required dependancies
 
 ### Prerequisites
 
-* python 3.8.1 https://www.python.org/downloads/
+* python 3.7.7 https://www.python.org/downloads/
 * OpenCV – 4.2.0 https://opencv.org/releases/
 ** special python library:
 *	XlsxWritter https://xlsxwriter.readthedocs.io/getting_started.html
