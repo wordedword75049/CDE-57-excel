@@ -11,4 +11,4 @@ python:
  
  script:
   - cd GenerateApp
-  - python generator.py ./ tables 5 10 long vertical
+  - python generator.py
