@@ -39,7 +39,7 @@ RandUpLowerBound = 600
 RandUpUpperBound = 1000
 
 #Варианты названий при генерации подписей
-Labels_modes=["Числа", "Названия компаний", "Номера годов", "Месяц и номер года"]
+Labels_modes=["Числа", "Номера годов", "Месяц и номер года"]
 
 
 #-------------------------
@@ -74,12 +74,12 @@ def read_csv(rowNumber, filename):
 def generate_labels(size, textmode): #генерирует подписи для диаграммы случайным образом
     labels = []
     random.seed()
-    mode = Labels_modes[random.randint(0, 3)] #случайный выбор режима подписей
+    mode = Labels_modes[random.randint(0, 2)] #случайный выбор режима подписей
     if mode == "Числа":   #числа от 1 до ColumnCount
         labels = list(range(1, size+1))
-    elif mode == "Названия компаний":  #названия существующих организаций
-        data = read_csv(textmode, "res\constituents.csv")
-        labels = random.sample(data[1:], size)
+#    elif mode == "Названия компаний":  #названия существующих организаций
+#        data = read_csv(textmode, "res\constituents.csv")
+#        labels = random.sample(data[1:], size)
     elif mode == "Номера годов":   #номера годов (не может быть больше 2020)
         start_year = random.randint(2010, 2020)
         labels = list(range(start_year-size, start_year))
@@ -125,8 +125,8 @@ def create_table(path, MaxColumnNumber, textmode):
         worksheet.write(column, 1, value)
 
     chart = workbook.add_chart({'type': 'column'})
-    colors = read_csv(0, "res\colors.csv")
-    selected_color = random.choice(colors)
+    #colors = read_csv(0, "res\colors.csv")
+    selected_color = "green"
     chart.add_series({
         'categories': '=Sheet1!$A$1:$A$' + str(ColumnCount),
         'values': '=Sheet1!$B$1:$B$' + str(ColumnCount),
