@@ -11,4 +11,4 @@ install:
 
 script:
   - cd GenerateApp
-  - python generator.py ./ table 5 10 short horizontal
+  - python generator.py ./ table 5 10 short vertical
