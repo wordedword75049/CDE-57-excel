@@ -1,15 +1,14 @@
-os: windows
-
 language: python
 
 python:
   - 3.6
  
 before_install:
+  - apt-get install python-tk
+      
+install:
   - pip install xlsxwriter
-  - pip install python-tk
   - pip install csv
-  - pip install win32com.client
 
 script:
   - cd GenerateApp
