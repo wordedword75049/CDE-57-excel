@@ -39,7 +39,7 @@ RandUpLowerBound = 600
 RandUpUpperBound = 1000
 
 #Варианты названий при генерации подписей
-Labels_modes=["Числа", "Номера годов", "Месяц и номер года"]
+Labels_modes=["Числа", "Номера годов"]
 
 
 #-------------------------
@@ -74,7 +74,7 @@ def read_csv(rowNumber, filename):
 def generate_labels(size, textmode): #генерирует подписи для диаграммы случайным образом
     labels = []
     random.seed()
-    mode = Labels_modes[random.randint(0, 2)] #случайный выбор режима подписей
+    mode = Labels_modes[random.randint(0, 1)] #случайный выбор режима подписей
     if mode == "Числа":   #числа от 1 до ColumnCount
         labels = list(range(1, size+1))
 #    elif mode == "Названия компаний":  #названия существующих организаций
@@ -83,17 +83,17 @@ def generate_labels(size, textmode): #генерирует подписи для
     elif mode == "Номера годов":   #номера годов (не может быть больше 2020)
         start_year = random.randint(2010, 2020)
         labels = list(range(start_year-size, start_year))
-    elif mode == "Месяц и номер года":    #месяц и номер года (не может быть больше 2020)
-        months = read_csv(textmode, "res\months.csv")
-        start_year = random.randint(2010-(size // 12), 2020-(size // 12))
-        start_month = random.randint(1,12)
-        for i in range(size):
-            current_year = start_year + ((start_month + i) // 12)
-            current_month = months[(start_month + i) % 12]
-            if textmode == 0:
-                labels.append("{}.{}".format(current_month, current_year))
-            elif textmode == 1:
-                labels.append("{} {}".format(current_month, current_year))
+    #elif mode == "Месяц и номер года":    #месяц и номер года (не может быть больше 2020)
+        #months = read_csv(textmode, "res\months.csv")
+        #start_year = random.randint(2010-(size // 12), 2020-(size // 12))
+        #start_month = random.randint(1,12)
+        #for i in range(size):
+            #current_year = start_year + ((start_month + i) // 12)
+            #current_month = months[(start_month + i) % 12]
+            #if textmode == 0:
+                #labels.append("{}.{}".format(current_month, current_year))
+            #elif textmode == 1:
+                #labels.append("{} {}".format(current_month, current_year))
 
     return labels
 
