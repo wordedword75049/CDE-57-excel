@@ -3,11 +3,11 @@ language: python
 python:
   - 3.6
  
- before_install:
+before_install:
   - pip install xlsxwriter
   - pip install tkinter
   - pip install csv
- 
- script:
+
+script:
   - cd GenerateApp
   - python generator.py
