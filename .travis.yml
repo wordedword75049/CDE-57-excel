@@ -1,3 +1,14 @@
 language: python
-rvm:
- - 3.8
+
+python:
+  - 3.8
+ 
+ before_install:
+  - pip install xlsxwriter
+  - pip install tkinter
+  - pip install csv
+  - pip install win32com.client
+ 
+ script:
+  - cd GenerateApp
+  - python generator.py ./ tables 5 10 long vertical
