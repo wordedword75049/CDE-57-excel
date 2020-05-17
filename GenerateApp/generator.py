@@ -51,7 +51,7 @@ import random
 import sys
 import xlsxwriter
 import csv
-import win32com.client as win32
+#import win32com.client as win32
 import tkinter
 from tkinter import font as tkFont
 
@@ -153,18 +153,18 @@ def create_table(path, MaxColumnNumber, textmode):
     worksheet.insert_chart('D3', chart)
     workbook.close()
 
-def export_image(path):
-    app = win32.Dispatch('Excel.Application')
-    workbook_file_name = str(os.path.join(path, 'source.xlsx'))
-    workbook = app.Workbooks.Open(Filename=workbook_file_name)
-    app.DisplayAlerts = False
-
-    for sheet in workbook.Worksheets:
-        for chartObject in sheet.ChartObjects():
-            chartObject.Activate()
-            image_file_name=str(os.path.join(path, 'image.png'))
-            chartObject.Chart.Export(image_file_name)
-    workbook.Close(SaveChanges=False, Filename=workbook_file_name)
+#def export_image(path):
+#    app = win32.Dispatch('Excel.Application')
+#    workbook_file_name = str(os.path.join(path, 'source.xlsx'))
+#    workbook = app.Workbooks.Open(Filename=workbook_file_name)
+#    app.DisplayAlerts = False
+#
+#     for sheet in workbook.Worksheets:
+#        for chartObject in sheet.ChartObjects():
+#            chartObject.Activate()
+#            image_file_name=str(os.path.join(path, 'image.png'))
+#            chartObject.Chart.Export(image_file_name)
+#    workbook.Close(SaveChanges=False, Filename=workbook_file_name)
 
 
 def generate(args):
@@ -182,7 +182,7 @@ def generate(args):
         if not os.access(iteration_path, os.F_OK):
             os.makedirs(iteration_path)
         create_table(iteration_path, args.MaxColumnsCount, (mode, turn))
-        export_image(iteration_path)
+        #export_image(iteration_path)
 
 
 
