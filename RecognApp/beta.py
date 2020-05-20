@@ -7,6 +7,7 @@ from sklearn.cluster import KMeans
 import matplotlib.pyplot as plt
 import argparse
 import cv2
+import xlsxwriter
 import numpy as np
 import math
 from collections import namedtuple
@@ -31,6 +32,16 @@ def x_val_for_column(array_of_column):
     a[count].x_val = cur
     return a
 
+
+def table_creation(data):
+    full_path = "./recognized_table.xlsx"
+    workbook = xlsxwriter.Workbook(full_path)
+
+    worksheet = workbook.add_worksheet()
+    for column in range(len(data)):
+        worksheet.write(column, 0, data[column].x_val)
+        worksheet.write(column, 1, data[column].y_val)
+    workbook.close()
 
 color_black = (0, 0, 0)
 #нахождение границ столбиков
@@ -72,6 +83,7 @@ for i in range(len(final_answer_column)):
 #печать всех столбиков и их значение в консоль
 for i in range(len(final_answer_column)):
     print('№', i, '| название', final_answer_column[i].x_val, '| знаечние', final_answer_column[i].y_val, '\n')
+table_creation(final_answer_column)
 
 
 #печать финального ответа на изображение
