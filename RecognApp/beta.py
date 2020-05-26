@@ -34,7 +34,7 @@ def x_val_for_column(array_of_column):
 
 
 def table_creation(data):
-    full_path = "./recognized_table.xlsx"
+    full_path = "./" + sys.argv[1].split(".")[0] + ".xlsx"
     workbook = xlsxwriter.Workbook(full_path)
 
     worksheet = workbook.add_worksheet()
