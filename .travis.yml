@@ -1,0 +1,14 @@
+language: python
+
+python:
+  - 3.6
+ 
+before_install:
+  - sudo apt-get install python-tk
+      
+install:
+  - pip install xlsxwriter
+
+script:
+  - cd GenerateApp
+  - python generator.py ./ table 5 10 short vertical
